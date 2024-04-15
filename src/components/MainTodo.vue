@@ -4,11 +4,35 @@
   const todoListRef = ref([]);
   const ls = localStorage.todoList;
   todoListRef.value = ls ? JSON.parse(ls) : [];
+  const isEditRef = ref(false);
+  let editId = -1;
 
   const addTodo = () => {
     const id = new Date().getTime();
     todoListRef.value.push({ id: id, task: todoRef.value });
     localStorage.todoList = JSON.stringify(todoListRef.value);
+    todoRef.value = '';
+  };
+
+  const showTodo = (id) => {
+    const todo = todoListRef.value.find((todo) => todo.id === id);
+    todoRef.value = todo.task;
+    isEditRef.value = true;
+    editId = todo.id;
+  };
+
+  const editTodo = () => {
+    const todo = todoListRef.value.find((todo) => todo.id === editId);
+
+    const idx = todoListRef.value.findIndex((todo) => todo.id === editId);
+
+    todo.task = todoRef.value;
+
+    todoListRef.value.splice(idx, 1, todo);
+
+    localStorage.todoList = JSON.stringify(todoListRef.value);
+    isEditRef.value = false;
+    editId = -1;
     todoRef.value = '';
   };
 </script>
@@ -21,7 +45,8 @@
       v-model="todoRef"
       placeholder=" + TODO を入力"
     />
-    <button class="btn" @click="addTodo">追加</button>
+    <button class="btn green" @click="editTodo" v-show="isEditRef">変更</button>
+    <button class="btn" @click="addTodo" v-show="!isEditRef">追加</button>
   </div>
 
   <div class="box_list">
@@ -31,7 +56,7 @@
         <label>{{ todo.task }}</label>
       </div>
       <div class="btns">
-        <button class="btn green">編</button>
+        <button class="btn green" @click="showTodo(todo.id)">編</button>
         <button class="btn pink">削</button>
       </div>
     </div>
