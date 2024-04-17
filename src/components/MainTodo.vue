@@ -27,7 +27,7 @@
   };
 
   const changeCheck = (id) => {
-    del(id);
+    check(id);
   };
 </script>
 
@@ -45,8 +45,13 @@
 
   <div class="box_list">
     <div class="todo_list" v-for="todo in todoListRef" :key="todo.id">
-      <div class="todo">
-        <input type="checkbox" class="check" />
+      <div class="todo" :class="{ fin: todo.checked }">
+        <input
+          type="checkbox"
+          class="check"
+          @change="changeCheck(todo.id)"
+          :checked="todo.checked"
+        />
         <label>{{ todo.task }}</label>
       </div>
       <div class="btns">
@@ -117,5 +122,11 @@
 
   .pink {
     background-color: #ff4081;
+  }
+
+  .fin {
+    text-decoration: line-through;
+    background-color: #ddd;
+    color: #777;
   }
 </style>
